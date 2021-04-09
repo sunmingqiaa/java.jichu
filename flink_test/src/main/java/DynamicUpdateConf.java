@@ -1,3 +1,4 @@
+import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.configuration.Configuration;
@@ -44,11 +45,11 @@ public class DynamicUpdateConf {
             public void run(SourceContext<String> ctx) throws Exception {
                 int size = dataSet.length;
                 while (isRunning) {
-                    TimeUnit.SECONDS.sleep(30);
+
                     int seed = (int) (Math.random() * size);
                     //随机选择关键字发送
                     ctx.collect(dataSet[seed]);
-                    System.out.println("读取到上游发送的处理命令:" + dataSet[seed]);
+//                    System.out.println("读取到上游发送的处理命令:" + dataSet[seed]);
                 }
             }
 
@@ -77,7 +78,7 @@ public class DynamicUpdateConf {
             public void run(SourceContext<String> ctx) throws Exception {
                 int size = dataSet.length;
                 while (isRunning) {
-                    TimeUnit.SECONDS.sleep(3);
+//                    TimeUnit.SECONDS.sleep(3);
                     int seed = (int) (Math.random() * size);
                     ctx.collect(dataSet[seed]);
                 }
@@ -90,35 +91,47 @@ public class DynamicUpdateConf {
 
         });
 
-        BroadcastConnectedStream<String, String> connect = dataStream.connect(broadcastStream);
+//        BroadcastConnectedStream<String, String> connect = dataStream.connect(broadcastStream);
         // 数据流和广播流连接处理并将拦截结果打印
         dataStream.connect(broadcastStream).process(new BroadcastProcessFunction<String, String, String>() {
-
+int count =0;
             //拦截的关键字
             private String keywords ;
-
+     private MapState<String, String> mapState;
+            @Override
+            public void processBroadcastElement(String value, Context ctx, Collector<String> out) throws Exception {
+                System.out.println(2);
+//                mapState.put("a",value);
+//                keywords = value;
+//                System.out.println("处理命令更新成功：" + value);
+//                System.out.println("mapstate"+ctx.getBroadcastState(CONFIG_KEYWORDS).iterator().hasNext());
+            }
             @Override
             public void open(Configuration parameters) throws Exception {
+//                mapState = getRuntimeContext().getMapState(CONFIG_KEYWORDS);
                 super.open(parameters);
-                keywords = "handle";
-                System.out.println("初始化模拟连接数据库读取处理命令：handle");
+//                keywords = "handle";
+//                System.out.println("初始化模拟连接数据库读取处理命令：handle");
+                System.out.println("source");
             }
+
 
             @Override
             public void processElement(String value, ReadOnlyContext ctx, Collector<String> out) throws Exception {
-                if (keywords.equals("handle")) {
+                System.out.println(1);
+               /* if (keywords.equals("handle")) {
                     out.collect(value);
                 }else {
                     System.out.println("收到unhandle命令，跳过处理逻辑");
+                }*/
+                count++;
+                if (count == 5) {
+                    Thread.sleep(10000000);
                 }
             }
 
-            @Override
-            public void processBroadcastElement(String value, Context ctx, Collector<String> out) throws Exception {
-                keywords = value;
-                System.out.println("处理命令更新成功：" + value);
-            }
-        }).print();
+
+        });
 
         environment.execute();
     }

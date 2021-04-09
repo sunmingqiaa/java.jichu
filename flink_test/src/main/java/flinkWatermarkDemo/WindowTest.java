@@ -29,6 +29,7 @@ public class WindowTest {
 //                .assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(2000))));//在数据源添加水印策略
 //    通过事件时间处理乱序数据,需要下面方法设置水印策略，其中包括水印生成器和时间戳分配器，时间戳分配器可以自己实现，也可以不实现，kafka数据源数据会自带时间戳
         stream.assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(2)));//在数据流设置水印策略
+        //<editor-fold desc="process">
         SingleOutputStreamOperator process = stream.keyBy(new MyKeySelector())
                 //KeyedStream->windowedStream 用window（），DataStream->AllWindowedStream 用windowAll（）
 //                如果按照处理时间需要用TumblingProcessingTimeWindows()方法
@@ -40,6 +41,7 @@ public class WindowTest {
                 如果用户指定了要使用的 trigger，默认的 trigger 将会被覆盖，不会起作用*/
                 .trigger(new MyTrigger())
                 .process(new MyProcessFunction());
+        //</editor-fold>
         /*stream.windowAll(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .allowedLateness(Time.seconds(3))
                 .trigger(new MyTrigger())
