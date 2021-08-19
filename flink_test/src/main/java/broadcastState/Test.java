@@ -6,20 +6,22 @@ import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.typeutils.ListTypeInfo;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.apache.flink.util.Collector;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class Test {
+   private static Logger logger = LoggerFactory.getLogger(Test.class);
     public static void main(String[] args) throws Exception {
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(3);
 //        模拟数据流
@@ -31,12 +33,15 @@ public class Test {
                     new Item("yellow", "square"),
 //                    new Item("yellow", "square"),
                     new Item("yellow", "round"),
+
             };
 
             @Override
             public void run(SourceContext<Item> sourceContext) throws Exception {
+                System.out.println("运行source");
                 int size = dataSet.length;
                 while (true) {
+                    logger.warn("kaishizhixing");
                     int seed = (int) (Math.random() * size);
                     TimeUnit.SECONDS.sleep(3);
                     System.out.println(dataSet[seed]);
@@ -79,6 +84,9 @@ public class Test {
                     //随机选择关键字发送
                     ctx.collect(dataSet[seed]);
                     System.out.println("读取到上游发送的处理规则:" + dataSet[seed]);
+               /* for (int i = 0; i <1000 ; i++) {
+                    logger.info("读取到上游发送的处理规则:" + dataSet[seed]);
+                }*/
 //                }
             }
 
@@ -94,6 +102,9 @@ public class Test {
                 return item.color;
             }
         });
+
+        ConnectedStreams<Item, Item> connect = colorPartitionedStream.connect(colorPartitionedStream);
+
         SingleOutputStreamOperator<String> process = colorPartitionedStream.connect(broadcastStream)
                 .process(
 

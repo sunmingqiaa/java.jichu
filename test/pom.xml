@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>AvroTest</module>
-        <module>Util</module>
+<!--        <module>Util</module>-->
     </modules>
 
     <repositories>
@@ -53,8 +53,13 @@
             <artifactId>avro</artifactId>
             <version>1.8.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-java</artifactId>
+            <version>1.10.0</version>
+        </dependency>
 
-   </dependencies>
+    </dependencies>
 
 
 </project>

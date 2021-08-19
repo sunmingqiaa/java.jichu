@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Item implements Serializable {
-    String color;
+     String color;
     String shape;
 
     public Item(String color, String shape) {
