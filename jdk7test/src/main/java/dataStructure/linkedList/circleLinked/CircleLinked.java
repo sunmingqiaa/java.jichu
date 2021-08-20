@@ -74,7 +74,7 @@ m = 2, 数2下
             }
             System.out.println("出圈" + first.no);
             first = first.next;
-            tail.next.next = null;
+//            tail.next.next = null;
             tail.next = first;
         }
     }
