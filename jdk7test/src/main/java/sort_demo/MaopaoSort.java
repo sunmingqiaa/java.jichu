@@ -4,21 +4,30 @@ import java.util.Arrays;
 
 public class MaopaoSort {
     public static Comparable[] sort(Comparable[] a) {
+        boolean flag = false;
         for (int i = a.length - 1; i >= 0; i--) {
             for (int j = 0; j < i; j++) {
                 if (greater(a[j], a[j + 1])) {
+                    flag = true;
                     exch(a, j);
                 }
+            }
+            if (flag) {
+                flag = false;
+            } else {
+                break;
             }
         }
         return a;
     }
+
     private static void exch(Comparable[] a, int j) {
         Comparable tmp;
         tmp = a[j];
         a[j] = a[j + 1];
         a[j + 1] = tmp;
     }
+
     private static boolean greater(Comparable a, Comparable b) {
         return a.compareTo(b) > 0;
     }
