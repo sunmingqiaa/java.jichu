@@ -16,6 +16,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import java.time.Duration;
 import java.util.Properties;
 
+@SuppressWarnings("all")
 public class WindowTest {
     public static void main(String[] args) throws Exception {
         // 构建流处理环境
@@ -40,9 +41,9 @@ public class WindowTest {
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
 //               设置了允许迟到时间，该窗口会在水印时间>=窗口结束时间+允许迟到时间时再次触发窗口计算
                 .allowedLateness(Time.seconds(3))
-      /*          如果用户不自定义Trigger的实现类，Flink将会调用默认的trigger，例如对于时间属性为 EventTime 的窗口，Flink 默认会使用EventTimeTrigger类；
-                时间属性为 ProcessingTime 的窗口，Flink 默认使用ProcessingTimeTrigger类，
-                如果用户指定了要使用的 trigger，默认的 trigger 将会被覆盖，不会起作用*/
+                /*          如果用户不自定义Trigger的实现类，Flink将会调用默认的trigger，例如对于时间属性为 EventTime 的窗口，Flink 默认会使用EventTimeTrigger类；
+                          时间属性为 ProcessingTime 的窗口，Flink 默认使用ProcessingTimeTrigger类，
+                          如果用户指定了要使用的 trigger，默认的 trigger 将会被覆盖，不会起作用*/
                 .trigger(new MyTrigger())
                 .process(new MyProcessFunction());
         //</editor-fold>
